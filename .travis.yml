@@ -2,14 +2,12 @@ language: cpp
 
 os:
   - linux
-  - osx
 
 dist: trusty
 sudo: required
 osx_image: xcode8.2
 
 compiler:
-  - clang
   - gcc
 
 env:
@@ -23,23 +21,7 @@ env:
     - secure: "Th0mBSkUCDqu+EA6F7zA6DCSDZBNunfndANyq06BwaFlj71daWWjthwYFsfg3T5N2ZmI+PsULQQpOirCnJt1lbNHhMVJwZPkW0JnjoxbSNpSI2+nHv7+GO9X9WjK0LRFawiQu8WxmLMQDA+0oR0BERSFKc3gmbuav9fDfla0dXg="
 
   matrix:
-    - BUILD_MODE="docs"
-    - BUILD_MODE="lint"
-    - BUILD_MODE="mini-shared"
-    - BUILD_MODE="mini-static"
     - BUILD_MODE="shared"
-    - BUILD_MODE="static"
-    - BUILD_MODE="bsi"
-    - BUILD_MODE="nist"
-    - BUILD_MODE="sanitizer"
-    - BUILD_MODE="coverage"
-    - BUILD_MODE="cross-arm32"
-    - BUILD_MODE="cross-arm64"
-    - BUILD_MODE="cross-win32"
-    - BUILD_MODE="cross-ppc32"
-    - BUILD_MODE="cross-ppc64"
-    - BUILD_MODE="valgrind"
-    - BUILD_MODE="sonarqube"
 
 matrix:
   # Ignore some problem builds for now

@@ -3,6 +3,7 @@
 import sys
 import os
 import subprocess
+import stat
 
 def main(args=None):
     if args is None:
@@ -31,8 +32,13 @@ def main(args=None):
 
     corpii = set([])
     for corpus in os.listdir(corpus_dir):
-        if corpus in ['.git', 'readme.txt']:
+        # Ignore regular files in toplevel dir
+        if not stat.S_ISDIR(os.stat(os.path.join(corpus_dir, corpus)).st_mode):
             continue
+
+        if corpus == '.git':
+            continue
+
         corpii.add(corpus)
 
     fuzzers_without_corpus = fuzzers - corpii
@@ -47,10 +53,17 @@ def main(args=None):
 
     any_crashes = False
 
+    tests_for_fuzzer = {}
+
     for f in sorted(list(fuzzers_with_corpus)):
         fuzzer_bin = os.path.join(fuzzer_dir, f)
         corpus_files = os.path.join(corpus_dir, f)
+
+        tests_for_fuzzer[f] = 0
+
         for corpus_file in sorted(list(os.listdir(corpus_files))):
+
+            tests_for_fuzzer[f] += 1
             corpus_fd = open(os.path.join(corpus_files, corpus_file), 'r')
             fuzzer_proc = subprocess.Popen([fuzzer_bin], stdin=corpus_fd,
                                            stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True)
@@ -68,6 +81,9 @@ def main(args=None):
             if len(stderr) != 0:
                 stderr = stderr.decode('ascii')
                 print("Fuzzer %s produced stderr on input %s:\n%s" % (f, corpus_file, stderr))
+
+    for f in sorted(tests_for_fuzzer.keys()):
+        print("Tested fuzzer %s with %d test cases" % (f, tests_for_fuzzer[f]))
 
     if any_crashes:
         return 2
